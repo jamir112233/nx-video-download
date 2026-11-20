@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10131d">
+<link rel="manifest" href="manifest.json">
+<title>NX Video Download</title>
+<style>
+:root{color-scheme:dark;--bg:#10131d;--panel:#1b2233;--muted:#aab4c8;--blue:#3478f6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+main{width:min(680px,100%);margin:auto;padding:24px 18px 48px}
+header{display:flex;align-items:center;gap:12px;margin:8px 0 52px}
+.logo{width:46px;height:46px;border-radius:14px;background:#222b45;display:grid;place-items:center;color:#72a7ff;font-size:23px;font-weight:800}
+.brand{font-weight:800;letter-spacing:.7px}.sub{font-size:11px;color:var(--muted);letter-spacing:2px}
+h1{font-size:clamp(30px,7vw,46px);line-height:1.08;margin:0 0 12px}
+p{color:var(--muted);line-height:1.55}
+.card{background:var(--panel);border:1px solid #2b3449;border-radius:20px;padding:18px;margin-top:28px}
+label{display:block;font-size:14px;color:#c5cee0;margin-bottom:9px}
+input{width:100%;padding:16px;border-radius:12px;border:1px solid #3a4560;background:#111827;color:#fff;font-size:15px;outline:none}
+input:focus{border-color:#72a7ff}
+button{width:100%;padding:15px;border:0;border-radius:12px;background:var(--blue);color:white;font-weight:700;font-size:16px;margin-top:12px}
+.note{font-size:12px;color:#8c98ae;margin-top:16px}
+.status{margin-top:14px;padding:12px;border-radius:10px;background:#111827;color:#c5cee0;font-size:14px;display:none}
+footer{text-align:center;color:#7f8aa1;font-size:11px;margin-top:38px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<main>
+<header><div class="logo">N</div><div><div class="brand">NX VIDEO</div><div class="sub">DOWNLOAD</div></div></header>
+<h1>Download your<br>video.</h1>
+<p>ভিডিওর লিংক পেস্ট করে শুরু করুন।</p>
+<section class="card">
+<label for="url">Video URL</label>
+<input id="url" type="url" placeholder="https://example.com/video.mp4" autocomplete="url">
+<button id="go">Check video link</button>
+<div class="status" id="status" role="status"></div>
+<div class="note">এটি প্রাথমিক সংস্করণ। আপাতত সরাসরি ভিডিও ফাইলের লিংক (যেমন MP4) পরীক্ষা করা যাবে। সোশ্যাল মিডিয়া লিংকের জন্য অনুমোদিত প্ল্যাটফর্ম-সমর্থন পরে যোগ হবে।</div>
+</section>
+<footer>NX VIDEO DOWNLOAD · YOUR VIDEO YOUR WAY</footer>
+</main>
+<script>
+const input=document.getElementById('url'), statusBox=document.getElementById('status');
+document.getElementById('go').addEventListener('click',()=>{
+ const value=input.value.trim();
+ statusBox.style.display='block';
+ try{
+  const u=new URL(value);
+  if(!['http:','https:'].includes(u.protocol)) throw new Error();
+  if(!/\.(mp4|webm|mov)(?:$|[?#])/i.test(u.href)){
+   statusBox.textContent='লিংকটি ঠিক আছে, তবে এটি সরাসরি ভিডিও ফাইলের লিংক বলে মনে হচ্ছে না। এই ডেমোতে সোশ্যাল মিডিয়া URL এখনো সমর্থিত নয়।';
+   return;
+  }
+  const a=document.createElement('a');a.href=u.href;a.download='nx-video';a.rel='noopener';a.textContent='';
+  document.body.appendChild(a);a.click();a.remove();
+  statusBox.textContent='ডাউনলোড শুরু করার অনুরোধ পাঠানো হয়েছে। ব্রাউজার অনুমতি চাইলে অনুমতি দিন।';
+ }catch(e){statusBox.textContent='সঠিক http বা https ভিডিও URL দিন।';}
+});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+</script>
+</body>
+</html>
